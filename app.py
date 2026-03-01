@@ -13,11 +13,15 @@ st.markdown("""
         width: 100%; height: 50px; border: none; font-weight: bold;
     }
     .stButton>button:hover { background-color: #a34ef1; color: white; }
+    .upload-box { border: 2px dashed #644ef1; padding: 20px; border-radius: 10px; }
     </style>
     """, unsafe_allow_html=True)
 
+# Navigation Setup
 if 'page' not in st.session_state:
     st.session_state.page = 'welcome'
+if 'tool' not in st.session_state:
+    st.session_state.tool = None
 
 # --- PAGE 1: WELCOME ---
 if st.session_state.page == 'welcome':
@@ -37,24 +41,41 @@ if st.session_state.page == 'welcome':
 # --- PAGE 2: SERVICES ---
 else:
     col_l, col_r = st.columns([1.5, 1])
+    
     with col_l:
         if os.path.exists("LeeonLogo.png"):
             st.image("LeeonLogo.png", width=120)
-        st.header("Services")
         
-        # Service Buttons (Logic integration will be next)
-        if st.button("Flipkart Label & Invoice Separator"):
-            st.info("Tool is ready. Integration starting...")
+        # Tool Selection Logic
+        if st.session_state.tool is None:
+            st.header("Services")
+            if st.button("Flipkart Label & Invoice Separator"):
+                st.session_state.tool = "flipkart"
+                st.rerun()
+            if st.button("Dropbox JPG Image Link Generator"):
+                st.session_state.tool = "dropbox"
+                st.rerun()
+            if st.button("iPhone Image Converter"):
+                st.session_state.tool = "iphone"
+                st.rerun()
+            if st.button("⬅ Back to Home"):
+                st.session_state.page = 'welcome'
+                st.rerun()
+        
+        # --- IF FLIPKART TOOL SELECTED ---
+        elif st.session_state.tool == "flipkart":
+            st.header("Flipkart PDF Cropper")
+            uploaded_file = st.file_uploader("Apni Flipkart PDF Upload Karein", type=['pdf'])
             
-        if st.button("Dropbox JPG Image Link Generator"):
-            st.write("Link Generator Active")
-
-        if st.button("iPhone Image Converter"):
-            st.write("HEIC to JPG Active")
+            if uploaded_file:
+                st.success("File Upload Ho Gayi!")
+                # Yahan logic trigger hoga
+                if st.button("Process & Download"):
+                    st.write("Processing... (Abhi hum iska logic connect kar rahe hain)")
             
-        if st.button("⬅ Back"):
-            st.session_state.page = 'welcome'
-            st.rerun()
+            if st.button("⬅ Back to Services"):
+                st.session_state.tool = None
+                st.rerun()
 
     with col_r:
         if os.path.exists("Secondpageartwork.png"):
